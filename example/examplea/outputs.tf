@@ -1,4 +1,4 @@
-outputs "queue" {
+output "queue" {
   value = module.batch
 }
 

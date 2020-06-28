@@ -1,4 +1,4 @@
-outputs "queue" {
+output "queue" {
   value = aws_batch_job_queue.batch
 }
 
