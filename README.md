@@ -28,6 +28,10 @@ module "batch" {
 The example in the **examplea** folder shows how to pass your own policy in when creating your key.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+No requirements.
+
 ## Providers
 
 | Name | Version |
@@ -37,7 +41,7 @@ The example in the **examplea** folder shows how to pass your own policy in when
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
+|------|-------------|------|---------|:--------:|
 | common\_tags | This is to help you add tags to your cloud objects | `map` | n/a | yes |
 | container | n/a | `string` | `"{
   \"command\":[\"echo\",\"'hello world'\"],
