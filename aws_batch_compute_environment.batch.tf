@@ -17,4 +17,6 @@ resource "aws_batch_compute_environment" "batch" {
     tags    = var.common_tags
     type    = "EC2"
   }
+
+  tags = var.common_tags
 }
