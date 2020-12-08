@@ -28,19 +28,21 @@ The example in the **examplea** folder shows how to pass your own policy in when
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| aws | 3.20.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | 3.20.0 |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| common\_tags | This is to help you add tags to your cloud objects | `map` | n/a | yes |
+| common\_tags | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
 | container | n/a | `string` | `"{
   \"command\":[\"echo\",\"'hello world'\"],
   \"environment\": [],
@@ -56,10 +58,10 @@ No requirements.
 | instance\_role | n/a | `string` | `"arn:aws:iam::680235478471:instance-profile/ecsInstanceRole"` | no |
 | job\_name | n/a | `string` | `"first-run-job-definition"` | no |
 | job\_type | n/a | `string` | `"container"` | no |
-| queue | n/a | `map` | <pre>{<br>  "name": "first-run-job-queue-2",<br>  "priority": 1,<br>  "state": "ENABLED"<br>}</pre> | no |
-| security\_group\_ids | n/a | `list` | <pre>[<br>  "sg-05749b21616ab0cdc"<br>]</pre> | no |
+| queue | n/a | `map(any)` | <pre>{<br>  "name": "first-run-job-queue-2",<br>  "priority": 1,<br>  "state": "ENABLED"<br>}</pre> | no |
+| security\_group\_ids | n/a | `list(any)` | <pre>[<br>  "sg-05749b21616ab0cdc"<br>]</pre> | no |
 | service\_role | n/a | `string` | `"arn:aws:iam::680235478471:role/service-role/AWSBatchServiceRole"` | no |
-| subnets | n/a | `list` | <pre>[<br>  "subnet-05808ec64faaa18ba"<br>]</pre> | no |
+| subnets | n/a | `list(any)` | <pre>[<br>  "subnet-05808ec64faaa18ba"<br>]</pre> | no |
 
 ## Outputs
 

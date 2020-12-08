@@ -1,10 +1,10 @@
 variable "common_tags" {
   description = "This is to help you add tags to your cloud objects"
-  type        = map
+  type        = map(any)
 }
 
 variable "queue" {
-  type = map
+  type = map(any)
   default = {
     name     = "first-run-job-queue-2"
     state    = "ENABLED"
@@ -14,20 +14,24 @@ variable "queue" {
 
 
 variable "service_role" {
+  type    = string
   default = "arn:aws:iam::680235478471:role/service-role/AWSBatchServiceRole"
 }
 
 variable "instance_role" {
+  type    = string
   default = "arn:aws:iam::680235478471:instance-profile/ecsInstanceRole"
 }
 
 variable "security_group_ids" {
+  type = list(any)
   default = [
     "sg-05749b21616ab0cdc",
   ]
 }
 
 variable "subnets" {
+  type = list(any)
   default = [
     "subnet-05808ec64faaa18ba",
   ]
