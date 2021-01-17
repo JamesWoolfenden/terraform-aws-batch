@@ -30,45 +30,48 @@ module "batch" {
 The example in the **examplea** folder shows how to pass your own policy in when creating your key.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-
 ## Requirements
 
-| Name | Version |
-| ---- | ------- |
-| aws  | 3.20.0  |
+No requirements.
 
 ## Providers
 
 | Name | Version |
-| ---- | ------- |
-| aws  | 3.20.0  |
+|------|---------|
+| aws | n/a |
 
 ## Inputs
 
-| Name        | Description                                        | Type       | Default | Required |
-| ----------- | -------------------------------------------------- | ---------- | ------- | :------: |
-| common_tags | This is to help you add tags to your cloud objects | `map(any)` | n/a     |   yes    |
-| container   | n/a                                                | `string`   | `"{     |
-
-\"command\":[\"echo\",\"'hello world'\"],
-\"environment\": [],
-\"image\": \"busybox\",
-\"memory\": 2000,
-\"mountPoints\": [] ,
-\"resourceRequirements\" : [],
-\"ulimits\": [] ,
-\"vcpus\": 2 ,
-\"volumes\": []
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| common\_tags | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
+| container | n/a | `string` | `"{
+  \"command\":[\"echo\",\"'hello world'\"],
+  \"environment\": [],
+  \"image\": \"busybox\",
+  \"memory\": 2000,
+  \"mountPoints\": [] ,
+  \"resourceRequirements\" : [],
+  \"ulimits\": [] ,
+  \"vcpus\": 2 ,
+  \"volumes\": []
 }
-"`| no | | instance\_role | n/a |`string`|`"arn:aws:iam::680235478471:instance-profile/ecsInstanceRole"`| no | | job\_name | n/a |`string`|`"first-run-job-definition"`| no | | job\_type | n/a |`string`|`"container"`| no | | queue | n/a |`map(any)`| <pre>{<br> "name": "first-run-job-queue-2",<br> "priority": 1,<br> "state": "ENABLED"<br>}</pre> | no | | security\_group\_ids | n/a |`list(any)`| <pre>[<br> "sg-05749b21616ab0cdc"<br>]</pre> | no | | service\_role | n/a |`string`|`"arn:aws:iam::680235478471:role/service-role/AWSBatchServiceRole"`| no | | subnets | n/a |`list(any)` | <pre>[<br> "subnet-05808ec64faaa18ba"<br>]</pre> | no |
+"` | no |
+| instance\_role | n/a | `string` | `"arn:aws:iam::680235478471:instance-profile/ecsInstanceRole"` | no |
+| job\_name | n/a | `string` | `"first-run-job-definition"` | no |
+| job\_type | n/a | `string` | `"container"` | no |
+| queue | n/a | `map(any)` | <pre>{<br>  "name": "first-run-job-queue-2",<br>  "priority": 1,<br>  "state": "ENABLED"<br>}</pre> | no |
+| security\_group\_ids | n/a | `list(any)` | <pre>[<br>  "sg-05749b21616ab0cdc"<br>]</pre> | no |
+| service\_role | n/a | `string` | `"arn:aws:iam::680235478471:role/service-role/AWSBatchServiceRole"` | no |
+| subnets | n/a | `list(any)` | <pre>[<br>  "subnet-05808ec64faaa18ba"<br>]</pre> | no |
 
 ## Outputs
 
-| Name        | Description |
-| ----------- | ----------- |
-| definition  | n/a         |
-| environment | n/a         |
-| queue       | n/a         |
+| Name | Description |
+|------|-------------|
+| definition | n/a |
+| environment | n/a |
+| queue | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
