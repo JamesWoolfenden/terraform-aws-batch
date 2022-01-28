@@ -30,16 +30,15 @@ module "batch" {
 The example in the **examplea** folder shows how to pass your own policy in when creating your key.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-
 ## Requirements
 
 No requirements.
 
 ## Providers
 
-| Name                                             | Version |
-| ------------------------------------------------ | ------- |
-| <a name="provider_aws"></a> [aws](#provider_aws) | n/a     |
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Modules
 
@@ -47,39 +46,44 @@ No modules.
 
 ## Resources
 
-| Name                                                                                                                                         | Type     |
-| -------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Name | Type |
+|------|------|
 | [aws_batch_compute_environment.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_compute_environment) | resource |
-| [aws_batch_job_definition.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_job_definition)           | resource |
-| [aws_batch_job_queue.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_job_queue)                     | resource |
+| [aws_batch_job_definition.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_job_definition) | resource |
+| [aws_batch_job_queue.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_job_queue) | resource |
 
 ## Inputs
 
-| Name                                                               | Description                                        | Type       | Default | Required |
-| ------------------------------------------------------------------ | -------------------------------------------------- | ---------- | ------- | :------: |
-| <a name="input_common_tags"></a> [common_tags](#input_common_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a     |   yes    |
-| <a name="input_container"></a> [container](#input_container)       | n/a                                                | `string`   | `"{     |
-
-\"command\":[\"echo\",\"'hello world'\"],
-\"environment\": [],
-\"image\": \"busybox\",
-\"memory\": 2000,
-\"mountPoints\": [] ,
-\"resourceRequirements\" : [],
-\"ulimits\": [] ,
-\"vcpus\": 2 ,
-\"volumes\": []
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
+| <a name="input_container"></a> [container](#input\_container) | n/a | `string` | `"{
+  \"command\":[\"echo\",\"'hello world'\"],
+  \"environment\": [],
+  \"image\": \"busybox\",
+  \"memory\": 2000,
+  \"mountPoints\": [] ,
+  \"resourceRequirements\" : [],
+  \"ulimits\": [] ,
+  \"vcpus\": 2 ,
+  \"volumes\": []
 }
-"`| no | | <a name="input_instance_role"></a> [instance\_role](#input\_instance\_role) | n/a |`string`|`"arn:aws:iam::680235478471:instance-profile/ecsInstanceRole"`| no | | <a name="input_job_name"></a> [job\_name](#input\_job\_name) | n/a |`string`|`"first-run-job-definition"`| no | | <a name="input_job_type"></a> [job\_type](#input\_job\_type) | n/a |`string`|`"container"`| no | | <a name="input_queue"></a> [queue](#input\_queue) | n/a |`map(any)`| <pre>{<br> "name": "first-run-job-queue-2",<br> "priority": 1,<br> "state": "ENABLED"<br>}</pre> | no | | <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | n/a |`list(any)`| <pre>[<br> "sg-05749b21616ab0cdc"<br>]</pre> | no | | <a name="input_service_role"></a> [service\_role](#input\_service\_role) | n/a |`string`|`"arn:aws:iam::680235478471:role/service-role/AWSBatchServiceRole"`| no | | <a name="input_subnets"></a> [subnets](#input\_subnets) | n/a |`list(any)` | <pre>[<br> "subnet-05808ec64faaa18ba"<br>]</pre> | no |
+"` | no |
+| <a name="input_instance_role"></a> [instance\_role](#input\_instance\_role) | n/a | `string` | `"arn:aws:iam::680235478471:instance-profile/ecsInstanceRole"` | no |
+| <a name="input_job_name"></a> [job\_name](#input\_job\_name) | n/a | `string` | `"first-run-job-definition"` | no |
+| <a name="input_job_type"></a> [job\_type](#input\_job\_type) | n/a | `string` | `"container"` | no |
+| <a name="input_queue"></a> [queue](#input\_queue) | n/a | `map(any)` | <pre>{<br>  "name": "first-run-job-queue-2",<br>  "priority": 1,<br>  "state": "ENABLED"<br>}</pre> | no |
+| <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | n/a | `list(any)` | <pre>[<br>  "sg-05749b21616ab0cdc"<br>]</pre> | no |
+| <a name="input_service_role"></a> [service\_role](#input\_service\_role) | n/a | `string` | `"arn:aws:iam::680235478471:role/service-role/AWSBatchServiceRole"` | no |
+| <a name="input_subnets"></a> [subnets](#input\_subnets) | n/a | `list(any)` | <pre>[<br>  "subnet-05808ec64faaa18ba"<br>]</pre> | no |
 
 ## Outputs
 
-| Name                                                                 | Description |
-| -------------------------------------------------------------------- | ----------- |
-| <a name="output_definition"></a> [definition](#output_definition)    | n/a         |
-| <a name="output_environment"></a> [environment](#output_environment) | n/a         |
-| <a name="output_queue"></a> [queue](#output_queue)                   | n/a         |
-
+| Name | Description |
+|------|-------------|
+| <a name="output_definition"></a> [definition](#output\_definition) | n/a |
+| <a name="output_environment"></a> [environment](#output\_environment) | n/a |
+| <a name="output_queue"></a> [queue](#output\_queue) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Related Projects
