@@ -12,15 +12,17 @@ variable "queue" {
   }
 }
 
+variable "fairshare" {
+  type = object({
+    compute_reservation = number
+    share_decay_seconds = number
 
-variable "service_role" {
-  type    = string
-  default = "arn:aws:iam::680235478471:role/service-role/AWSBatchServiceRole"
-}
+    share_distributions = list(object({
+      share_identifier = string
+      weight_factor    = number
+    }))
+  })
 
-variable "instance_role" {
-  type    = string
-  default = "arn:aws:iam::680235478471:instance-profile/ecsInstanceRole"
 }
 
 variable "security_group_ids" {
@@ -64,4 +66,23 @@ variable "container" {
   "volumes": []
 }
 CONTAINER_PROPERTIES
+}
+
+
+variable "service_role" {
+  type = string
+}
+
+variable "instance_role" {
+  type = string
+}
+
+variable "name" {
+  type        = string
+  description = "(optional) describe your variable"
+}
+
+variable "parameters" {
+  type    = map(any)
+  default = {}
 }
