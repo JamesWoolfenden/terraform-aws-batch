@@ -2,7 +2,6 @@ variable "common_tags" {
   description = "This is to help you add tags to your cloud objects"
   type        = map(any)
 }
-
 variable "queue" {
   type = map(any)
   default = {
@@ -11,7 +10,6 @@ variable "queue" {
     priority = 1
   }
 }
-
 variable "fairshare" {
   type = object({
     compute_reservation = number
@@ -24,14 +22,12 @@ variable "fairshare" {
   })
 
 }
-
 variable "security_group_ids" {
   type = list(any)
   default = [
     "sg-05749b21616ab0cdc",
   ]
 }
-
 variable "subnets" {
   type = list(any)
   default = [
@@ -39,19 +35,14 @@ variable "subnets" {
   ]
 
 }
-
 variable "job_name" {
   type    = string
   default = "first-run-job-definition"
 }
-
-
 variable "job_type" {
   type    = string
   default = "container"
 }
-
-
 variable "container" {
   default = <<CONTAINER_PROPERTIES
 {
@@ -67,21 +58,16 @@ variable "container" {
 }
 CONTAINER_PROPERTIES
 }
-
-
 variable "service_role" {
   type = string
 }
-
 variable "instance_role" {
   type = string
 }
-
 variable "name" {
   type        = string
   description = "(optional) describe your variable"
 }
-
 variable "parameters" {
   type    = map(any)
   default = {}
