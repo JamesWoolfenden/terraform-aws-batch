@@ -108,6 +108,26 @@ resource "aws_iam_policy" "terraform_pike" {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
+                "Batch:DescribeSchedulingPolicies"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "Iam:PassRole"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
                 "batch:CreateComputeEnvironment",
                 "batch:CreateJobQueue",
                 "batch:CreateSchedulingPolicy",
@@ -126,10 +146,12 @@ resource "aws_iam_policy" "terraform_pike" {
                 "batch:UpdateJobQueue",
                 "batch:UpdateSchedulingPolicy"
             ],
-            "Resource": "*"
+            "Resource": [
+                "*"
+            ]
         },
         {
-            "Sid": "VisualEditor1",
+            "Sid": "VisualEditor3",
             "Effect": "Allow",
             "Action": [
                 "ec2:DescribeAccountAttributes",
@@ -141,25 +163,32 @@ resource "aws_iam_policy" "terraform_pike" {
                 "ec2:DescribeSubnets",
                 "ec2:DescribeVpcs"
             ],
-            "Resource": "*"
+            "Resource": [
+                "*"
+            ]
         },
         {
-            "Sid": "VisualEditor2",
+            "Sid": "VisualEditor4",
             "Effect": "Allow",
             "Action": [
                 "ecs:Describe*",
                 "ecs:DescribeClusters",
                 "ecs:List*"
             ],
-            "Resource": "*"
+            "Resource": [
+                "*"
+            ]
         },
         {
-            "Sid": "VisualEditor3",
+            "Sid": "VisualEditor5",
             "Effect": "Allow",
             "Action": [
+                "iam:CreateServiceLinkedRole",
                 "iam:PassRole"
             ],
-            "Resource": "*"
+            "Resource": [
+                "*"
+            ]
         }
     ]
 })
