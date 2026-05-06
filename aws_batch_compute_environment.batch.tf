@@ -1,6 +1,6 @@
 resource "aws_batch_compute_environment" "batch" {
-  service_role             = var.service_role
-  type                     = "MANAGED"
+  service_role = var.service_role
+  type         = "MANAGED"
 
   compute_resources {
     bid_percentage = 0
