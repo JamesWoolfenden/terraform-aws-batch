@@ -1,5 +1,4 @@
 resource "aws_batch_compute_environment" "batch" {
-  compute_environment_name = var.name
   service_role             = var.service_role
   type                     = "MANAGED"
 
