@@ -3,11 +3,9 @@
 [![Build Status](https://github.com/JamesWoolfenden/terraform-aws-batch/workflows/Verify%20and%20Bump/badge.svg?branch=master)](https://github.com/JamesWoolfenden/terraform-aws-batch)
 [![Latest Release](https://img.shields.io/github/release/JamesWoolfenden/terraform-aws-batch.svg)](https://github.com/JamesWoolfenden/terraform-aws-batch/releases/latest)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/JamesWoolfenden/terraform-aws-apigateway.svg?label=latest)](https://github.com/JamesWoolfenden/terraform-aws-apigateway/releases/latest)
-![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.14.0-blue.svg)
-[![Infrastructure Tests](https://www.bridgecrew.cloud/badges/github/JamesWoolfenden/terraform-aws-apigateway/cis_aws)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=JamesWoolfenden%2Fterraform-aws-apigateway&benchmark=CIS+AWS+V1.2)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![checkov](https://img.shields.io/badge/checkov-verified-brightgreen)](https://www.checkov.io/)
-[![Infrastructure Tests](https://www.bridgecrew.cloud/badges/github/jameswoolfenden/terraform-aws-apigateway/general)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=JamesWoolfenden%2Fterraform-aws-apigateway&benchmark=INFRASTRUCTURE+SECURITY)
+
 
 Terraform module -
 
@@ -37,7 +35,7 @@ No requirements.
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Modules
@@ -47,7 +45,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_batch_compute_environment.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_compute_environment) | resource |
 | [aws_batch_job_definition.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_job_definition) | resource |
 | [aws_batch_job_queue.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_job_queue) | resource |
@@ -56,7 +54,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
 | <a name="input_container"></a> [container](#input\_container) | n/a | `string` | `"{
   \"command\":[\"echo\",\"'hello world'\"],
@@ -70,21 +68,21 @@ No modules.
   \"volumes\": []
 }
 "` | no |
-| <a name="input_fairshare"></a> [fairshare](#input\_fairshare) | n/a | <pre>object({<br>    compute_reservation = number<br>    share_decay_seconds = number<br><br>    share_distributions = list(object({<br>      share_identifier = string<br>      weight_factor    = number<br>    }))<br>  })</pre> | n/a | yes |
+| <a name="input_fairshare"></a> [fairshare](#input\_fairshare) | n/a | <pre>object({<br/>    compute_reservation = number<br/>    share_decay_seconds = number<br/><br/>    share_distributions = list(object({<br/>      share_identifier = string<br/>      weight_factor    = number<br/>    }))<br/>  })</pre> | n/a | yes |
 | <a name="input_instance_role"></a> [instance\_role](#input\_instance\_role) | n/a | `string` | n/a | yes |
 | <a name="input_job_name"></a> [job\_name](#input\_job\_name) | n/a | `string` | `"first-run-job-definition"` | no |
 | <a name="input_job_type"></a> [job\_type](#input\_job\_type) | n/a | `string` | `"container"` | no |
 | <a name="input_name"></a> [name](#input\_name) | (optional) describe your variable | `string` | n/a | yes |
 | <a name="input_parameters"></a> [parameters](#input\_parameters) | n/a | `map(any)` | `{}` | no |
-| <a name="input_queue"></a> [queue](#input\_queue) | n/a | `map(any)` | <pre>{<br>  "name": "first-run-job-queue-2",<br>  "priority": 1,<br>  "state": "ENABLED"<br>}</pre> | no |
-| <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | n/a | `list(any)` | <pre>[<br>  "sg-05749b21616ab0cdc"<br>]</pre> | no |
+| <a name="input_queue"></a> [queue](#input\_queue) | n/a | `map(any)` | <pre>{<br/>  "name": "first-run-job-queue-2",<br/>  "priority": 1,<br/>  "state": "ENABLED"<br/>}</pre> | no |
+| <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | n/a | `list(any)` | <pre>[<br/>  "sg-05749b21616ab0cdc"<br/>]</pre> | no |
 | <a name="input_service_role"></a> [service\_role](#input\_service\_role) | n/a | `string` | n/a | yes |
-| <a name="input_subnets"></a> [subnets](#input\_subnets) | n/a | `list(any)` | <pre>[<br>  "subnet-05808ec64faaa18ba"<br>]</pre> | no |
+| <a name="input_subnets"></a> [subnets](#input\_subnets) | n/a | `list(any)` | <pre>[<br/>  "subnet-05808ec64faaa18ba"<br/>]</pre> | no |
 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_definition"></a> [definition](#output\_definition) | n/a |
 | <a name="output_environment"></a> [environment](#output\_environment) | n/a |
 | <a name="output_queue"></a> [queue](#output\_queue) | n/a |
@@ -218,7 +216,7 @@ Please use the [issue tracker](https://github.com/JamesWoolfenden/terraform-aws-
 
 ## Copyrights
 
-Copyright © 2019-2022 James Woolfenden
+Copyright © 2019-2026 James Woolfenden
 
 ## License
 
