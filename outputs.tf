@@ -1,9 +1,14 @@
 output "queue" {
-  value = aws_batch_job_queue.batch
+  description = "The AWS Batch job queue resource."
+  value       = aws_batch_job_queue.batch
 }
+
 output "definition" {
-  value = aws_batch_job_definition.batch
+  description = "The AWS Batch job definition resource."
+  value       = aws_batch_job_definition.batch
 }
+
 output "environment" {
-  value = aws_batch_compute_environment.batch
+  description = "The AWS Batch compute environment resource."
+  value       = aws_batch_compute_environment.batch
 }

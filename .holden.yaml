@@ -1,0 +1,14 @@
+# Policy IDs to exclude project-wide.
+# Use when a policy is not applicable to this project and annotating
+# every resource with holden:ignore would be noise.
+skip_policies:
+  - HLD_TF_030 # service_count is inflated by a known, already-fixed-upstream pike bug:
+  # pike's published mapping data (v1.0.9) has case-typos ("Batch:DescribeSchedulingPolicies"
+  # vs "batch:...", "Iam:PassRole" vs "iam:...") that double-count those two services when
+  # holden dedupes by prefix. Verified via `pike scan` directly: this workspace's real,
+  # deduplicated service count is 6 (batch, ec2, ecs, iam, kms, logs), under the lte:7
+  # threshold. Fixed in pike source (JamesWoolfenden/pike) and in holden's own case-typo
+  # handling (commits 3bd54da, 7edd26e, 1f3b37e), but holden still depends on the
+  # *published* pike module (v1.0.9), not the fixed local source, so this keeps firing
+  # until pike cuts a release and holden bumps its go.mod dependency. Remove this skip
+  # once that release lands and re-scan to confirm the real count.

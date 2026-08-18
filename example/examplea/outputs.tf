@@ -1,9 +1,14 @@
 output "queue" {
-  value = module.batch
+  description = "The queue output from batch module"
+  value       = module.batch
 }
+
 output "definition" {
-  value = module.batch.definition
+  description = "The definition output from batch module"
+  value       = module.batch.definition
 }
+
 output "environment" {
-  value = module.batch.environment
+  description = "The environment output from batch module"
+  value       = module.batch.environment
 }

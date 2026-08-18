@@ -14,9 +14,10 @@ resource "aws_batch_compute_environment" "batch" {
     security_group_ids = var.security_group_ids
 
     subnets = var.subnets
-    tags    = var.common_tags
     type    = "EC2"
   }
 
-  tags = var.common_tags
+  lifecycle {
+    ignore_changes = [compute_resources[0].desired_vcpus]
+  }
 }

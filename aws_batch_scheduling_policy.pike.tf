@@ -14,6 +14,4 @@ resource "aws_batch_scheduling_policy" "pike" {
       }
     }
   }
-
-  tags = var.common_tags
 }

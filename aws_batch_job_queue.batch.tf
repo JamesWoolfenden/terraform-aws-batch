@@ -3,5 +3,9 @@ resource "aws_batch_job_queue" "batch" {
   state                 = var.queue["state"]
   priority              = var.queue["priority"]
   scheduling_policy_arn = aws_batch_scheduling_policy.pike.arn
-  tags                  = var.common_tags
+
+  compute_environment_order {
+    order               = 1
+    compute_environment = aws_batch_compute_environment.batch.arn
+  }
 }

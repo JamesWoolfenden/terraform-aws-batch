@@ -1,0 +1,80 @@
+{
+  "findings": [
+    {
+      "confidence": "high",
+      "explanation": "var.job_type's validation block (variables.tf:90) accepts either \"container\" or \"multinode\" as valid AWS Batch job types. But aws_batch_job_definition.batch (aws_batch_job_definition.batch.tf:1-14) unconditionally sets container_properties = var.container and never references node_properties anywhere in the module. AWS Batch multi-node parallel jobs (type = \"multinode\") require node_properties, not container_properties \u2014 supplying the wrong block for the job type is rejected by the AWS Batch API. A single-resource attribute check can't catch this: it requires knowing that job_type's own declared value space includes a value the same resource body structurally cannot serve. Any consumer who follows the variable's own validation and sets job_type = \"multinode\" gets a job definition that fails to apply (or applies with a nonsensical container_properties Batch will reject at RegisterJobDefinition time).",
+      "file": "variables.tf",
+      "first_seen": "2026-08-18",
+      "fixable": false,
+      "id": "HOLDEN_AI_001",
+      "last_seen": "2026-08-18",
+      "line": 90,
+      "principle": "reliability",
+      "related_resources": [
+        "var.job_type",
+        "var.container"
+      ],
+      "remediation": "Either (a) narrow var.job_type's validation to just [\"container\"] and drop \"multinode\" from the accepted values until node_properties support is added, or (b) add a node_properties block guarded by a conditional/dynamic block keyed on var.job_type, with container_properties only set when job_type == \"container\". Which is correct depends on whether multinode support is actually intended for this module \u2014 a judgment call, not a mechanical fix.",
+      "resource": "aws_batch_job_definition.batch",
+      "severity": "HIGH",
+      "status": "open",
+      "suppression_reason": null,
+      "title": "job_type=\"multinode\" is a declared-valid value the resource can never actually support",
+      "unresolved_since": "2026-08-18"
+    },
+    {
+      "confidence": "high",
+      "explanation": "aws_batch_job_definition has zero holden deterministic coverage today (absent from coverage_by_type entirely), so this gap is invisible to the rules engine. var.container's JSON never sets logConfiguration, and no aws_cloudwatch_log_group resource exists anywhere in this module (grep confirms zero matches for cloudwatch_log_group in the repo). Every job run under this definition falls back to AWS Batch's implicit default awslogs group (/aws/batch/job) \u2014 a log group this module neither creates nor manages, with no Terraform-controlled retention period (defaults to never-expire) and no CMK encryption, unlike every other logging surface holden already checks (CloudTrail, VPC flow logs, S3 access logs).",
+      "file": "aws_batch_job_definition.batch.tf",
+      "first_seen": "2026-08-18",
+      "fixable": false,
+      "id": "HOLDEN_AI_002",
+      "last_seen": "2026-08-18",
+      "line": 1,
+      "principle": "logging-and-monitoring",
+      "related_resources": [],
+      "remediation": "Fixed: added a dedicated aws_cloudwatch_log_group.batch (retention_in_days = var.log_retention_days, default 365) and a dedicated aws_kms_key.batch_logs (rotation enabled, deletion_window_in_days = 30, prevent_destroy, key policy scoped to the CloudWatch Logs service principal + this specific log group's ARN via an EncryptionContext condition) so the module is self-contained -- no new required variable. aws_batch_job_definition.batch's container_properties now merges var.container with an injected logConfiguration pointing at the managed log group, always overriding any logConfiguration a consumer's own container JSON might set. This also satisfies the new HLD_AWS_288 (holden-ai-review's suggested policy for this exact gap, since implemented and merged into holden) and, as a byproduct, HLD_AWS_087/HLD_TF_041/HLD_TF_050 on the new KMS key.",
+      "resource": "aws_batch_job_definition.batch",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "Job definition has no logConfiguration and no managed CloudWatch log group",
+      "unresolved_since": "2026-08-18"
+    },
+    {
+      "confidence": "high",
+      "explanation": "var.container's default JSON sets \"image\": \"busybox\" with no tag \u2014 Docker resolves an untagged image reference to :latest, the same mutable-tag pattern holden already flags for other resource types (e.g. \"image: nginx:latest\") but can't see here because container_properties is an opaque JSON string on a resource type with no deterministic coverage at all. A floating tag means the exact image content actually pulled at job-run time is not reproducible or auditable \u2014 a later busybox:latest publish can silently change what every job execution runs, with no corresponding Terraform diff to review.",
+      "file": "variables.tf",
+      "first_seen": "2026-08-18",
+      "fix": "\"image\": \"busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662\",",
+      "fixable": true,
+      "id": "HOLDEN_AI_003",
+      "last_seen": "2026-08-18",
+      "line": 102,
+      "principle": "supply-chain",
+      "related_resources": [
+        "var.container"
+      ],
+      "remediation": "Pin to a content digest for full immutability: \"image\": \"busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662\" (the digest of busybox:1.36.1, resolved via `docker pull busybox:1.36.1` + `docker inspect --format='{{index .RepoDigests 0}}'`, matching the doc pattern in HLD_DF_001/HLD_K8M_023).",
+      "resource": "aws_batch_job_definition.batch",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "suppression_reason": null,
+      "title": "Default container image \"busybox\" has no tag, floating to :latest",
+      "unresolved_since": "2026-08-18"
+    }
+  ],
+  "scan_date": "2026-08-18T00:00:00Z",
+  "scan_path": ".",
+  "suggested_policies": [
+    {
+      "rationale": "aws_batch_job_definition has zero deterministic coverage in holden today. container_properties.image following a mutable/floating tag pattern is exactly the supply-chain check holden already applies to other resource types \u2014 mirrors HLD_GCP_200/HLD_GCP_265 (Cloud Run image tags) exactly: same two-condition all: structure (one regex for explicit :latest, one for the no-tag-at-all case that's semantically identical but doesn't contain the literal string \"latest\"), same severity. Concrete, unambiguous, and repeatable across any Terraform using aws_batch_job_definition. Verified empirically against this repo with `holden scan --policies <dir>`: fires correctly on aws_batch_job_definition.batch with no parser changes needed \u2014 container_properties is a fully static heredoc (no interpolation), so it resolves via the same json_decode:true + sub_path mechanism already used by HLD_AWS_243 (aws_ecs_task_definition.container_definitions).",
+      "yaml": "id: HLD_PROPOSED_001\nname: Batch job definition container image must not use a floating tag\nprinciple: supply-chain\nseverity: HIGH\nrationale: |\n  Using :latest tags (or no tag at all, which resolves identically) creates\n  both supply chain and reproducibility risk: an attacker or compromised\n  upstream can push malicious code under the same tag, and terraform apply\n  blindly deploys whatever currently holds that name. AWS Batch jobs often\n  process data unattended (ETL, batch transforms), making a backdoored image\n  particularly dangerous, and there is no audit trail of which code version\n  actually ran a given job.\n\n  An image reference with no tag or digest at all (e.g. \"busybox\", no\n  trailing \":tag\" or \"@sha256:...\") is functionally identical to :latest \u2014\n  the registry resolves it to whichever image currently holds that name \u2014\n  but the literal string never contains \":latest\", so a check that only\n  matches that suffix misses it entirely. This policy catches both forms.\nremediation: |\n  Tag images with immutable identifiers:\n\n    \"image\": \"myregistry/app:v1.2.3\"\n    \"image\": \"myregistry/app@sha256:abc123...\"\n\n  For dev/staging where non-reproducibility is accepted, suppress with:\n    # holden:ignore:HLD_PROPOSED_001 - dev env, using CI latest\nresources:\n  aws_batch_job_definition:\n    all:\n      - path: container_properties\n        json_decode: true\n        sub_path: image\n        not_matches: \":latest$\"\n      - path: container_properties\n        json_decode: true\n        sub_path: image\n        not_matches: \"^([^/]+/)*[^/:@]+$\"\n"
+    },
+    {
+      "rationale": "Same zero-coverage gap on aws_batch_job_definition, this time for logging: container_properties.logConfiguration is absent from every deterministic AWS logging check today. Concrete and repeatable: any aws_batch_job_definition whose container_properties JSON omits logConfiguration relies on AWS's unmanaged default log group with no Terraform-controlled retention or encryption. Verified empirically against this repo: fires correctly on aws_batch_job_definition.batch with no parser changes needed, same json_decode:true + sub_path mechanism as the sibling suggested_policy.",
+      "yaml": "id: HLD_PROPOSED_002\nname: Batch job definition should configure explicit log group for container output\nprinciple: logging-and-monitoring\nseverity: MEDIUM\nrationale: |\n  Without an explicit logConfiguration, AWS Batch sends container output to an\n  implicit, Terraform-unmanaged default log group with no retention limit and\n  no customer-managed encryption -- unlike every other logging surface holden\n  already checks (CloudTrail, VPC flow logs, S3 access logs).\nremediation: |\n  Add a logConfiguration block to container_properties referencing a\n  Terraform-managed aws_cloudwatch_log_group with an explicit retention_in_days:\n    \"logConfiguration\": {\n      \"logDriver\": \"awslogs\",\n      \"options\": { \"awslogs-group\": \"<managed-log-group-name>\" }\n    }\nresources:\n  aws_batch_job_definition:\n    path: container_properties\n    json_decode: true\n    sub_path: logConfiguration\n    not_null: true\n"
+    }
+  ],
+  "suggested_suppressions": []
+}

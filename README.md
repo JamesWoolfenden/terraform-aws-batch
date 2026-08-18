@@ -50,42 +50,36 @@ No modules.
 | [aws_batch_job_definition.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_job_definition) | resource |
 | [aws_batch_job_queue.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_job_queue) | resource |
 | [aws_batch_scheduling_policy.pike](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/batch_scheduling_policy) | resource |
+| [aws_cloudwatch_log_group.batch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
+| [aws_kms_alias.batch_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_alias) | resource |
+| [aws_kms_key.batch_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | This is to help you add tags to your cloud objects | `map(any)` | n/a | yes |
-| <a name="input_container"></a> [container](#input\_container) | n/a | `string` | `"{
-  \"command\":[\"echo\",\"'hello world'\"],
-  \"environment\": [],
-  \"image\": \"busybox\",
-  \"memory\": 2000,
-  \"mountPoints\": [] ,
-  \"resourceRequirements\" : [],
-  \"ulimits\": [] ,
-  \"vcpus\": 2 ,
-  \"volumes\": []
-}
-"` | no |
-| <a name="input_fairshare"></a> [fairshare](#input\_fairshare) | n/a | <pre>object({<br/>    compute_reservation = number<br/>    share_decay_seconds = number<br/><br/>    share_distributions = list(object({<br/>      share_identifier = string<br/>      weight_factor    = number<br/>    }))<br/>  })</pre> | n/a | yes |
-| <a name="input_instance_role"></a> [instance\_role](#input\_instance\_role) | n/a | `string` | n/a | yes |
-| <a name="input_job_name"></a> [job\_name](#input\_job\_name) | n/a | `string` | `"first-run-job-definition"` | no |
-| <a name="input_job_type"></a> [job\_type](#input\_job\_type) | n/a | `string` | `"container"` | no |
-| <a name="input_name"></a> [name](#input\_name) | (optional) describe your variable | `string` | n/a | yes |
-| <a name="input_parameters"></a> [parameters](#input\_parameters) | n/a | `map(any)` | `{}` | no |
-| <a name="input_queue"></a> [queue](#input\_queue) | n/a | `map(any)` | <pre>{<br/>  "name": "first-run-job-queue-2",<br/>  "priority": 1,<br/>  "state": "ENABLED"<br/>}</pre> | no |
-| <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | n/a | `list(any)` | <pre>[<br/>  "sg-05749b21616ab0cdc"<br/>]</pre> | no |
-| <a name="input_service_role"></a> [service\_role](#input\_service\_role) | n/a | `string` | n/a | yes |
-| <a name="input_subnets"></a> [subnets](#input\_subnets) | n/a | `list(any)` | <pre>[<br/>  "subnet-05808ec64faaa18ba"<br/>]</pre> | no |
+| <a name="input_container"></a> [container](#input\_container) | Container properties merged into the AWS Batch job definition's container\_properties argument. A logConfiguration pointing at this module's managed CloudWatch log group is always merged in on top, regardless of what's supplied here. | `any` | <pre>{<br/>  "command": [<br/>    "echo",<br/>    "'hello world'"<br/>  ],<br/>  "environment": [],<br/>  "image": "busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662",<br/>  "memory": 2000,<br/>  "mountPoints": [],<br/>  "resourceRequirements": [],<br/>  "ulimits": [],<br/>  "vcpus": 2,<br/>  "volumes": []<br/>}</pre> | no |
+| <a name="input_fairshare"></a> [fairshare](#input\_fairshare) | Fair share scheduling policy: compute reservation percentage, share decay period in seconds, and per-identifier share weights. | <pre>object({<br/>    compute_reservation = number<br/>    share_decay_seconds = number<br/><br/>    share_distributions = list(object({<br/>      share_identifier = string<br/>      weight_factor    = number<br/>    }))<br/>  })</pre> | n/a | yes |
+| <a name="input_instance_role"></a> [instance\_role](#input\_instance\_role) | ARN of the IAM instance profile used by EC2 instances in the compute environment. | `string` | n/a | yes |
+| <a name="input_job_name"></a> [job\_name](#input\_job\_name) | Name of the AWS Batch job definition. | `string` | `"first-run-job-definition"` | no |
+| <a name="input_job_type"></a> [job\_type](#input\_job\_type) | Type of AWS Batch job definition. Must be "container" or "multinode". | `string` | `"container"` | no |
+| <a name="input_log_retention_days"></a> [log\_retention\_days](#input\_log\_retention\_days) | Number of days to retain the AWS Batch job definition's container logs in CloudWatch Logs. | `number` | `365` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name of the AWS Batch scheduling policy. | `string` | n/a | yes |
+| <a name="input_parameters"></a> [parameters](#input\_parameters) | Default parameter substitution placeholders for the AWS Batch job definition. | `map(any)` | `{}` | no |
+| <a name="input_queue"></a> [queue](#input\_queue) | AWS Batch job queue configuration: name, state (ENABLED or DISABLED), and priority. | `map(any)` | <pre>{<br/>  "name": "first-run-job-queue-2",<br/>  "priority": 1,<br/>  "state": "ENABLED"<br/>}</pre> | no |
+| <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | List of security group IDs to attach to the compute environment | `list(any)` | <pre>[<br/>  "sg-05749b21616ab0cdc"<br/>]</pre> | no |
+| <a name="input_service_role"></a> [service\_role](#input\_service\_role) | ARN of the IAM role that allows AWS Batch to make calls to other AWS services on your behalf. | `string` | n/a | yes |
+| <a name="input_subnets"></a> [subnets](#input\_subnets) | List of subnets to use for the compute environment | `list(string)` | <pre>[<br/>  "subnet-05808ec64faaa18ba"<br/>]</pre> | no |
 
 ## Outputs
 
 | Name | Description |
 | ---- | ----------- |
-| <a name="output_definition"></a> [definition](#output\_definition) | n/a |
-| <a name="output_environment"></a> [environment](#output\_environment) | n/a |
-| <a name="output_queue"></a> [queue](#output\_queue) | n/a |
+| <a name="output_definition"></a> [definition](#output\_definition) | The AWS Batch job definition resource. |
+| <a name="output_environment"></a> [environment](#output\_environment) | The AWS Batch compute environment resource. |
+| <a name="output_queue"></a> [queue](#output\_queue) | The AWS Batch job queue resource. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Policy
@@ -94,6 +88,7 @@ No modules.
 The Terraform resource required is:
 
 ```golang
+# apply role — full permissions for terraform apply
 resource "aws_iam_policy" "terraform_pike" {
   name_prefix = "terraform_pike"
   path        = "/"
@@ -138,8 +133,6 @@ resource "aws_iam_policy" "terraform_pike" {
                 "batch:DescribeJobQueues",
                 "batch:DescribeSchedulingPolicies",
                 "batch:RegisterJobDefinition",
-                "batch:TagResource",
-                "batch:UntagResource",
                 "batch:UpdateComputeEnvironment",
                 "batch:UpdateJobQueue",
                 "batch:UpdateSchedulingPolicy"
@@ -183,6 +176,82 @@ resource "aws_iam_policy" "terraform_pike" {
             "Action": [
                 "iam:CreateServiceLinkedRole",
                 "iam:PassRole"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor6",
+            "Effect": "Allow",
+            "Action": [
+                "kms:CreateAlias",
+                "kms:CreateKey",
+                "kms:DeleteAlias",
+                "kms:DescribeKey",
+                "kms:EnableKeyRotation",
+                "kms:GetKeyPolicy",
+                "kms:GetKeyRotationStatus",
+                "kms:ListAliases",
+                "kms:ListResourceTags",
+                "kms:PutKeyPolicy",
+                "kms:ScheduleKeyDeletion",
+                "kms:UpdateAlias",
+                "kms:UpdateKeyDescription"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor7",
+            "Effect": "Allow",
+            "Action": [
+                "logs:AssociateKmsKey",
+                "logs:CreateLogGroup",
+                "logs:DeleteLogGroup",
+                "logs:DeleteRetentionPolicy",
+                "logs:DescribeLogGroups",
+                "logs:DisassociateKmsKey",
+                "logs:ListTagsForResource",
+                "logs:ListTagsLogGroup",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+})
+}
+
+# plan role — read-only permissions for terraform plan
+resource "aws_iam_policy" "terraform_pike_plan" {
+  name_prefix = "terraform_pike_plan"
+  path        = "/"
+  description = "Pike Autogenerated policy from IAC"
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "Batch:DescribeSchedulingPolicies"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "kms:DescribeKey",
+                "kms:GetKeyPolicy",
+                "kms:GetKeyRotationStatus",
+                "kms:ListResourceTags"
             ],
             "Resource": [
                 "*"

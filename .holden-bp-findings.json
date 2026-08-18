@@ -1,0 +1,100 @@
+{
+  "findings": [
+    {
+      "confidence": "high",
+      "explanation": "aws_batch_job_queue.batch has no compute_environment_order (and no service_environment_order) block. A Batch job queue with no compute environment attached cannot run any job submitted to it \u2014 jobs will sit in RUNNABLE state indefinitely. terraform validate doesn't catch this because compute_environment_order is schema-optional (to support the newer service_environment_order alternative), so this only surfaces as silent job starvation at runtime.",
+      "file": "aws_batch_job_queue.batch.tf",
+      "first_seen": "2026-08-18",
+      "fix": "  compute_environment_order {\n    order               = 1\n    compute_environment = aws_batch_compute_environment.batch.arn\n  }\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_001",
+      "last_seen": "2026-08-18",
+      "line": 1,
+      "principle": "reliability",
+      "remediation": "Add a compute_environment_order block referencing the module's own compute environment:\n\n  compute_environment_order {\n    order               = 1\n    compute_environment = aws_batch_compute_environment.batch.arn\n  }",
+      "resource": "aws_batch_job_queue.batch",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "title": "Job queue has no compute environment to route jobs to"
+    },
+    {
+      "confidence": "high",
+      "explanation": "compute_resources.desired_vcpus is set to a static 2, but AWS Batch actively adjusts this value at runtime in response to queue depth. Without a lifecycle.ignore_changes entry for it, every subsequent terraform plan reports drift, and an apply will forcibly reset desired_vcpus back to 2 \u2014 potentially scaling down active compute capacity mid-job. This is a well-documented gotcha with aws_batch_compute_environment.",
+      "file": "aws_batch_compute_environment.batch.tf",
+      "first_seen": "2026-08-18",
+      "fix": "  lifecycle {\n    ignore_changes = [compute_resources[0].desired_vcpus]\n  }\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_002",
+      "last_seen": "2026-08-18",
+      "line": 1,
+      "principle": "reliability",
+      "remediation": "Add a lifecycle block to the resource:\n\n  lifecycle {\n    ignore_changes = [compute_resources[0].desired_vcpus]\n  }",
+      "resource": "aws_batch_compute_environment.batch",
+      "severity": "MEDIUM",
+      "status": "fixed",
+      "title": "Compute environment doesn't ignore AWS-managed desired_vcpus drift"
+    },
+    {
+      "confidence": "high",
+      "explanation": "Without a retry_strategy block, a job that fails due to a transient issue (e.g. Spot interruption, a brief dependency outage) fails permanently instead of being retried automatically.",
+      "file": "aws_batch_job_definition.batch.tf",
+      "first_seen": "2026-08-18",
+      "fix": "  retry_strategy {\n    attempts = 3\n  }\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_003",
+      "last_seen": "2026-08-18",
+      "line": 1,
+      "principle": "reliability",
+      "remediation": "Add a retry_strategy block, e.g.:\n\n  retry_strategy {\n    attempts = 3\n  }",
+      "resource": "aws_batch_job_definition.batch",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "Job definition has no retry_strategy"
+    },
+    {
+      "confidence": "high",
+      "explanation": "Without a timeout block, a job that hangs (stuck process, deadlock, waiting on an unavailable dependency) runs indefinitely, consuming compute capacity and cost with no automatic cutoff.",
+      "file": "aws_batch_job_definition.batch.tf",
+      "first_seen": "2026-08-18",
+      "fix": "  timeout {\n    attempt_duration_seconds = 3600\n  }\n",
+      "fixable": true,
+      "id": "HOLDEN_BP_004",
+      "last_seen": "2026-08-18",
+      "line": 1,
+      "principle": "cost",
+      "remediation": "Add a timeout block, e.g.:\n\n  timeout {\n    attempt_duration_seconds = 3600\n  }",
+      "resource": "aws_batch_job_definition.batch",
+      "severity": "LOW",
+      "status": "fixed",
+      "title": "Job definition has no execution timeout"
+    },
+    {
+      "confidence": "medium",
+      "explanation": "var.security_group_ids defaults to [\"sg-05749b21616ab0cdc\"] and var.subnets defaults to [\"subnet-05808ec64faaa18ba\"] \u2014 both look like real resource IDs from a specific AWS account/VPC, baked in as defaults on a reusable, publishable module. A consumer who forgets to override them won't get a clear error until AWS Batch's API rejects the security group/subnet as not found or not accessible to their account, rather than an obvious 'you must set this' failure at plan time.",
+      "file": "variables.tf",
+      "first_seen": "2026-08-18",
+      "fixable": false,
+      "id": "HOLDEN_BP_005",
+      "last_seen": "2026-08-18",
+      "line": 23,
+      "principle": "repeatability",
+      "remediation": "Either drop the defaults so these become required inputs (safer for a reusable module \u2014 forces every consumer to supply their own values), or clearly document in the description that the defaults are example-only IDs from the module author's own test account and must be overridden.",
+      "resource": "var.security_group_ids, var.subnets",
+      "severity": "LOW",
+      "status": "open",
+      "title": "Reusable module ships live, account-specific resource IDs as variable defaults"
+    }
+  ],
+  "scan_date": "2026-08-18T00:00:00Z",
+  "scan_path": ".",
+  "suggested_policies": [
+    {
+      "rationale": "aws_batch_job_queue resources are non-functional without a compute environment attached, but this is schema-optional so terraform validate never catches it. This pattern is unambiguous and fires correctly on any aws_batch_job_queue.",
+      "yaml": "id: HLD_AWS_XXX  # get real ID via `holden next-id --cloud AWS`\nname: Batch job queues must have at least one compute or service environment\nprinciple: reliability\nseverity: MEDIUM\nrationale: |\n  A job queue with no compute_environment_order (and no service_environment_order)\n  cannot route any submitted job to compute capacity. Jobs sit in RUNNABLE state\n  indefinitely. terraform validate does not catch this because the attribute is\n  schema-optional, so the gap only surfaces as silent job starvation at runtime.\nmessage: |\n  aws_batch_job_queue has no compute_environment_order and no service_environment_order \u2014 submitted jobs have nowhere to run.\nremediation: |\n  Add a compute_environment_order block:\n    compute_environment_order {\n      order               = 1\n      compute_environment = aws_batch_compute_environment.example.arn\n    }\nresources:\n  aws_batch_job_queue:\n    path: compute_environment_order\n    not_empty: true\n"
+    },
+    {
+      "rationale": "aws_batch_compute_environment.compute_resources.desired_vcpus is actively managed by AWS at runtime; without a matching lifecycle.ignore_changes entry, Terraform will fight AWS's own autoscaling on every plan/apply and can forcibly reset active capacity. This is a well-known, deterministic gotcha specific to this resource type/attribute pair.",
+      "yaml": "id: HLD_AWS_XXX  # get real ID via `holden next-id --cloud AWS`\nname: Batch compute environments should ignore AWS-managed desired_vcpus drift\nprinciple: reliability\nseverity: MEDIUM\nrationale: |\n  AWS Batch adjusts compute_resources.desired_vcpus at runtime based on queue\n  depth. Without a lifecycle.ignore_changes entry for it, every terraform plan\n  reports spurious drift, and an apply can forcibly reset desired_vcpus,\n  disrupting active compute capacity mid-job.\nmessage: |\n  aws_batch_compute_environment does not ignore_changes on compute_resources[0].desired_vcpus.\nremediation: |\n  Add a lifecycle block:\n    lifecycle {\n      ignore_changes = [compute_resources[0].desired_vcpus]\n    }\nresources:\n  aws_batch_compute_environment:\n    path: lifecycle.ignore_changes\n    contains: \"compute_resources[0].desired_vcpus\"\n"
+    }
+  ]
+}
